@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Você acha que acertou</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .topo {
+            margin-top: 20px;
+        }
+        .boneco {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+        .boneco .cabeca {
+            width: 50px;
+            height: 50px;
+            background-color: #f9c74f;
+            border-radius: 50%;
+            position: relative;
+            animation: balancar 1s infinite;
+        }
+        .boneco .olho {
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 15px;
+        }
+        .boneco .olho.esquerdo {
+            left: 12px;
+        }
+        .boneco .olho.direito {
+            right: 12px;
+        }
+        .boneco .corpo {
+            width: 10px;
+            height: 50px;
+            background-color: #90be6d;
+            margin-top: -5px;
+            position: relative;
+        }
+        .boneco .mao {
+            width: 20px;
+            height: 40px;
+            background-color: #f9c74f;
+            border-radius: 10px;
+            position: absolute;
+            top: 10px;
+            left: -30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            animation: dedo 1s infinite;
+        }
+        .boneco .mao .dedo {
+            width: 8px;
+            height: 20px;
+            background-color: #f9c74f;
+            border-radius: 5px;
+        }
+        @keyframes balancar {
+            0%, 100% {
+                transform: rotate(-15deg);
+            }
+            50% {
+                transform: rotate(15deg);
+            }
+        }
+        @keyframes dedo {
+            0%, 100% {
+                transform: rotate(-15deg);
+            }
+            50% {
+                transform: rotate(15deg);
+            }
+        }
+        .texto {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .jogo {
+            margin-top: 40px;
+            font-size: 16px;
+        }
+        .botao {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            background-color: #f9c74f;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .botao:hover {
+            background-color: #f4a261;
+        }
+        .pontos {
+            margin-top: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .contagem {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #f72585;
+        }
+    </style>
+</head>
+<body>
+    <div class="topo">
+        <div class="boneco">
+            <div class="cabeca">
+                <div class="olho esquerdo"></div>
+                <div class="olho direito"></div>
+            </div>
+            <div class="corpo">
+                <div class="mao">
+                    <div class="dedo"></div>
+                </div>
+            </div>
+        </div>
+        <div class="texto">
+            Você acha que acertou, mas não acertou.<br>
+            Terá que esperar até o seu aniversário para ter a resposta.
+        </div>
+        <div class="contagem" id="contagem">Calculando tempo até o aniversário...</div>
+    </div>
+    <div class="jogo">
+        <p>Por enquanto que seu aniversário não chega, pode ir jogando esse joguinho:</p>
+        <button class="botao" onclick="adicionarPonto()">Clique para marcar pontos</button>
+        <button class="botao" onclick="resetarPontos()">Resetar Pontos</button>
+        <div class="pontos" id="pontos">Pontos: 0</div>
+    </div>
+
+    <script>
+        // Define a data do próximo aniversário
+        const dataAniversario = new Date(new Date().getFullYear(), 10, 29); // Exemplo: 29 de novembro
+        if (new Date() > dataAniversario) {
+            dataAniversario.setFullYear(dataAniversario.getFullYear() + 1);
+        }
+
+        // Atualiza a contagem regressiva
+        function atualizarContagem() {
+            const agora = new Date();
+            const diferenca = dataAniversario - agora;
+            const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
+
+            document.getElementById('contagem').innerText = 
+                `Faltam ${dias} dias, ${horas} horas, ${minutos} minutos e ${segundos} segundos para o seu aniversário!`;
+        }
+
+        setInterval(atualizarContagem, 1000);
+
+        // Carrega a pontuação inicial do localStorage ou define como 0
+        let pontos = localStorage.getItem('pontos') ? parseInt(localStorage.getItem('pontos')) : 0;
+
+        // Atualiza o texto inicial dos pontos
+        document.getElementById('pontos').innerText = `Pontos: ${pontos}`;
+
+        // Função para adicionar pontos
+        function adicionarPonto() {
+            pontos++;
+            atualizarPontos();
+        }
+
+        // Função para resetar os pontos
+        function resetarPontos() {
+            pontos = 0;
+            atualizarPontos();
+        }
+
+        // Atualiza a exibição e salva no localStorage
+        function atualizarPontos() {
+            document.getElementById('pontos').innerText = `Pontos: ${pontos}`;
+            localStorage.setItem('pontos', pontos);
+        }
+    </script>
+</body>
+</html>
